@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F&B Management System — Use Case Diagram</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f9f8f5;
+    color: #1a1a18;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; color: #c2c0b6; }
+    .actor-body { background: #232320 !important; }
+    .uc-item:hover, .uc-item.active { background: #2c2c2a !important; border-color: #444441 !important; }
+    .uc-detail { background: #232320 !important; border-color: #444441 !important; }
+    .actor-card { border-color: #444441; }
+    .pill-include { background: #085041 !important; color: #9FE1CB !important; }
+    .pill-extend  { background: #633806 !important; color: #FAC775 !important; }
+  }
+
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+  p.sub { font-size: 13px; color: #73726c; margin-bottom: 1.5rem; }
+
+  .uc-legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+  .uc-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color: #73726c; }
+  .uc-legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+
+  .actor-col { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+  @media (max-width: 700px) { .actor-col { grid-template-columns: 1fr 1fr; } }
+
+  .actor-card { border: 1px solid #d3d1c7; border-radius: 12px; overflow: hidden; }
+  .actor-header {
+    padding: 10px 14px 8px; font-size: 13px; font-weight: 500;
+    color: #fff; display: flex; align-items: center; gap: 8px;
+  }
+  .actor-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; flex-shrink:0;
+  }
+  .actor-icon svg { width:15px; height:15px; fill: white; }
+  .actor-body { padding: 10px 10px 12px; display:flex; flex-direction:column; gap:5px; background: #fff; }
+
+  .uc-item {
+    font-size: 12px; padding: 5px 9px; border-radius: 6px; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 6px;
+    color: #1a1a18; border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s; line-height: 1.4;
+  }
+  .uc-item:hover { border-color: #d3d1c7; background: #f1efe8; }
+  .uc-item.active { border-color: #d3d1c7; background: #f1efe8; }
+  .uc-dot { width:7px; height:7px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+
+  .uc-detail {
+    margin-top: 14px; padding: 14px 16px; border-radius: 10px;
+    border: 1px solid #d3d1c7; background: #f1efe8;
+    font-size: 13px; color: #1a1a18; min-height: 60px;
+  }
+  .uc-detail-title { font-weight: 500; margin-bottom: 8px; }
+  .uc-detail-row { display:flex; gap:24px; flex-wrap:wrap; }
+  .uc-detail-col { display:flex; flex-direction:column; gap:3px; }
+  .uc-detail-label { font-size:11px; color: #73726c; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .uc-detail-val { font-size:12px; }
+
+  .pill { display:inline-block; padding: 2px 8px; border-radius:20px; font-size:11px; font-weight:500; margin: 2px 2px 0 0; }
+  .pill-include { background: #E1F5EE; color: #085041; }
+  .pill-extend  { background: #FAEEDA; color: #633806; }
+</style>
+</head>
+<body>
+<h1>F&B Management System — Use Case Diagram</h1>
+<p class="sub">Toàn bộ hệ thống · 4 Actors · 20 Use Cases · Click để xem chi tiết</p>
+
+<div class="uc-legend">
+  <div class="uc-legend-item"><div class="uc-legend-dot" style="background:#534AB7"></div> Admin</div>
+  <div class="uc-legend-item"><div class="uc-legend-dot" style="background:#0F6E56"></div> Manager</div>
+  <div class="uc-legend-item"><div class="uc-legend-dot" style="background:#993C1D"></div> Staff</div>
+  <div class="uc-legend-item"><div class="uc-legend-dot" style="background:#854F0B"></div> Kitchen</div>
+  <div class="uc-legend-item" style="margin-left:auto">
+    <span class="pill pill-include">«include»</span> bắt buộc &nbsp;
+    <span class="pill pill-extend">«extend»</span> tuỳ chọn
+  </div>
+</div>
+
+<div class="actor-col" id="actor-col"></div>
+<div class="uc-detail" id="uc-detail">
+  <span style="color:#73726c;font-size:12px;">Click vào bất kỳ use case nào để xem chi tiết.</span>
+</div>
+
+<script>
+const ACTORS = [
+  {
+    id: 'admin', label: 'Admin', color: '#534AB7',
+    usecases: [
+      { id:'uc1',  name:'Đăng nhập hệ thống',       include:['Xác thực JWT','Kiểm tra role'],          extend:[] },
+      { id:'uc2',  name:'Quản lý Organization',      include:['CRUD Organization'],                     extend:['Thiết lập cấu hình SaaS'] },
+      { id:'uc3',  name:'Quản lý City & Store',      include:['CRUD Store','Gán City cho Store'],       extend:[] },
+      { id:'uc4',  name:'Quản lý người dùng',        include:['Tạo / cập nhật User','Gán role & storeId'], extend:['Khoá tài khoản'] },
+      { id:'uc5',  name:'Xem báo cáo toàn hệ thống', include:['Lọc theo Store','Lọc theo thời gian'],  extend:['Xuất báo cáo'] },
+    ]
+  },
+  {
+    id: 'manager', label: 'Manager', color: '#0F6E56',
+    usecases: [
+      { id:'uc6',  name:'Quản lý bàn & QR',         include:['CRUD Table','Tạo mã QR'],                extend:['In mã QR'] },
+      { id:'uc7',  name:'Quản lý thực đơn',          include:['CRUD Product','Gán category'],           extend:['Ẩn / hiện sản phẩm'] },
+      { id:'uc8',  name:'Quản lý Recipe',            include:['Gắn nguyên liệu vào Product','Nhập số lượng'], extend:[] },
+      { id:'uc9',  name:'Nhập kho',                  include:['Tạo Stock Import','Cập nhật Inventory'], extend:['Ghi chú lô hàng'] },
+      { id:'uc10', name:'Xem tồn kho',               include:['Lọc theo nguyên liệu'],                  extend:['Cảnh báo hàng sắp hết'] },
+      { id:'uc11', name:'Xem lịch sử giao dịch kho', include:['Xem Import / Export log'],               extend:[] },
+      { id:'uc12', name:'Xem báo cáo chi nhánh',     include:['Thống kê Order','Thống kê doanh thu'],   extend:[] },
+    ]
+  },
+  {
+    id: 'staff', label: 'Staff', color: '#993C1D',
+    usecases: [
+      { id:'uc13', name:'Scan / nhập mã QR bàn',    include:['Tra cứu Table theo code'],               extend:[] },
+      { id:'uc14', name:'Tạo Order',                 include:['Chọn Product','Nhập số lượng & ghi chú','Validate storeId'], extend:['Thêm ghi chú đặc biệt'] },
+      { id:'uc15', name:'Xem danh sách Order',       include:['Lọc theo trạng thái','Lọc theo bàn'],   extend:[] },
+      { id:'uc16', name:'Nhận thông báo realtime',   include:['Kết nối Socket.io','Lắng nghe order-updated'], extend:[] },
+    ]
+  },
+  {
+    id: 'kitchen', label: 'Kitchen', color: '#854F0B',
+    usecases: [
+      { id:'uc17', name:'Xem Order mới (realtime)',  include:['Nhận sự kiện new-order','Hiển thị theo store'], extend:[] },
+      { id:'uc18', name:'Chuyển trạng thái Order',   include:['pending → cooking','cooking → done'],    extend:[] },
+      { id:'uc19', name:'Auto-deduction kho',        include:['Lấy Recipe','Trừ Inventory','Ghi Stock Export'], extend:['Báo lỗi out of stock'] },
+      { id:'uc20', name:'Gửi cập nhật realtime',     include:['Emit update-order','Server broadcast order-updated'], extend:[] },
+    ]
+  },
+];
+
+const col = document.getElementById('actor-col');
+const detail = document.getElementById('uc-detail');
+
+ACTORS.forEach(actor => {
+  const card = document.createElement('div');
+  card.className = 'actor-card';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'actor-header';
+  hdr.style.background = actor.color;
+  hdr.innerHTML = `
+    <div class="actor-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <span>${actor.label}</span>`;
+  card.appendChild(hdr);
+
+  const body = document.createElement('div');
+  body.className = 'actor-body';
+
+  actor.usecases.forEach(uc => {
+    const item = document.createElement('div');
+    item.className = 'uc-item';
+    item.innerHTML = `<div class="uc-dot" style="background:${actor.color}"></div><span>${uc.name}</span>`;
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.uc-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+      const incPills = uc.include.map(i => `<span class="pill pill-include">«include» ${i}</span>`).join('');
+      const extPills = uc.extend.length
+        ? uc.extend.map(e => `<span class="pill pill-extend">«extend» ${e}</span>`).join('')
+        : '<span style="color:#73726c;font-size:12px;">—</span>';
+      detail.innerHTML = `
+        <div class="uc-detail-title" style="color:${actor.color}">${uc.name}</div>
+        <div class="uc-detail-row">
+          <div class="uc-detail-col">
+            <div class="uc-detail-label">Actor</div>
+            <div class="uc-detail-val">${actor.label}</div>
+          </div>
+          <div class="uc-detail-col" style="flex:1">
+            <div class="uc-detail-label">Include (bắt buộc)</div>
+            <div>${incPills}</div>
+          </div>
+          <div class="uc-detail-col" style="flex:1">
+            <div class="uc-detail-label">Extend (tuỳ chọn)</div>
+            <div>${extPills}</div>
+          </div>
+        </div>`;
+    });
+    body.appendChild(item);
+  });
+
+  card.appendChild(body);
+  col.appendChild(card);
+});
+</script>
+</body>
+</html>

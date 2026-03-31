@@ -1,0 +1,500 @@
+# 📱 F&B Management System
+
+## Multi-Store • Inventory • Role-Based Access (RBAC)
+
+### 📘 Product Requirement Document (PRD) – Version 1.0
+
+---
+
+# 1. 📌 Overview
+
+## 1.1 Purpose
+
+Hệ thống F&B Management System được xây dựng nhằm:
+
+* Quản lý chuỗi cửa hàng (multi-store)
+* Hỗ trợ khách hàng order tại bàn qua QR
+* Quản lý kho & nguyên vật liệu theo từng chi nhánh
+* Phân quyền người dùng theo vai trò
+
+---
+
+## 1.2 Objectives
+
+* Vận hành thực tế cho mô hình chuỗi F&B
+* Đảm bảo dữ liệu tách biệt theo từng chi nhánh
+* Tối ưu quy trình order → bếp → kho
+* Là nền tảng mở rộng thành SaaS
+
+---
+
+## 1.3 Scope
+
+### In Scope (MVP)
+
+* QR Ordering tại bàn
+* Multi-store (nhiều chi nhánh)
+* Inventory cơ bản
+* Role-based access control (RBAC)
+* Realtime order (Socket)
+
+### Out of Scope (Future)
+
+* Thanh toán online
+* Multi-warehouse
+* AI prediction
+* Báo cáo nâng cao
+
+---
+
+# 2. 🧱 System Architecture
+
+## 2.1 High-Level Architecture
+
+Client (Mobile App)
+→ Backend API (Node.js)
+→ Database (MongoDB)
+↔ Realtime Layer (Socket.io)
+
+---
+
+## 2.2 Hierarchy Structure
+
+Organization
+→ City
+→ Store
+→ Users
+→ Tables
+→ Orders
+→ Inventory
+→ Ingredients
+
+---
+
+# 3. 👤 User & Role Management
+
+## 3.1 Roles Definition
+
+| Role    | Description           |
+| ------- | --------------------- |
+| admin   | Quản lý toàn hệ thống |
+| manager | Quản lý 1 chi nhánh   |
+| staff   | Nhân viên phục vụ     |
+| kitchen | Nhân viên bếp         |
+
+---
+
+## 3.2 User Schema
+
+```js
+{
+  _id,
+  name,
+  email,
+  password,
+  role,
+  organizationId,
+  storeId,
+  status,
+  createdAt
+}
+```
+
+---
+
+## 3.3 Authorization Rules (RBAC)
+
+### Access Control Matrix
+
+| Role    | Permissions         |
+| ------- | ------------------- |
+| admin   | Full access         |
+| manager | Full within store   |
+| staff   | Create order        |
+| kitchen | View & update order |
+
+---
+
+## 3.4 Security Rules
+
+* Mỗi user thuộc **1 store duy nhất**
+* Không được truy cập data store khác
+* Mọi API phải validate:
+
+```js
+req.user.storeId === resource.storeId
+```
+
+---
+
+# 4. 🪑 Table & QR System
+
+## 4.1 Table Schema
+
+```js
+{
+  _id,
+  name,
+  code,
+  storeId,
+  status,
+  createdAt
+}
+```
+
+---
+
+## 4.2 QR Code Strategy
+
+QR chứa:
+
+* store identifier
+* table identifier
+* random token
+
+Ví dụ:
+
+```
+HCM_Q1_B01_X7H2
+```
+
+---
+
+# 5. 🧾 Order Management
+
+## 5.1 Order Schema
+
+```js
+{
+  _id,
+  storeId,
+  tableId,
+  items: [
+    {
+      productId,
+      quantity,
+      note
+    }
+  ],
+  status,
+  createdAt
+}
+```
+
+---
+
+## 5.2 Order Status Flow
+
+pending → cooking → done
+
+---
+
+## 5.3 Business Rules
+
+* Order không được sửa sau khi tạo
+* Update status phải theo flow
+* Mỗi order thuộc 1 table
+
+---
+
+# 6. 🍔 Product & Recipe System
+
+## 6.1 Product Schema
+
+```js
+{
+  _id,
+  name,
+  price,
+  category,
+  storeId
+}
+```
+
+---
+
+## 6.2 Recipe Mapping
+
+```js
+{
+  _id,
+  productId,
+  ingredients: [
+    {
+      ingredientId,
+      quantity
+    }
+  ]
+}
+```
+
+---
+
+# 7. 📦 Inventory Management
+
+## 7.1 Ingredient Schema
+
+```js
+{
+  _id,
+  name,
+  unit,
+  storeId
+}
+```
+
+---
+
+## 7.2 Inventory Schema
+
+```js
+{
+  _id,
+  ingredientId,
+  quantity,
+  storeId,
+  updatedAt
+}
+```
+
+---
+
+## 7.3 Stock Transactions
+
+### Import (Nhập kho)
+
+```js
+{
+  _id,
+  storeId,
+  items,
+  createdAt
+}
+```
+
+---
+
+### Export (Xuất kho)
+
+```js
+{
+  _id,
+  storeId,
+  items,
+  type,
+  createdAt
+}
+```
+
+---
+
+## 7.4 Inventory Rules
+
+* Inventory quản lý theo store
+* Không share giữa các chi nhánh
+* Luôn log lịch sử import/export
+
+---
+
+# 8. 🔄 Order → Inventory Integration
+
+## 8.1 Auto Deduction Flow
+
+Khi order chuyển sang trạng thái `cooking`:
+
+1. Lấy danh sách nguyên liệu từ recipe
+2. Tính tổng số lượng cần trừ
+3. Trừ tồn kho
+4. Log export transaction
+
+---
+
+## 8.2 Validation
+
+* Nếu thiếu nguyên liệu:
+
+  * Không cho chuyển cooking
+  * Trả lỗi “Out of stock”
+
+---
+
+## 8.3 Transaction Requirement
+
+* Phải dùng DB transaction
+* Đảm bảo:
+
+  * Không âm kho
+  * Không lệch dữ liệu
+
+---
+
+# 9. ⚡ Realtime System
+
+## 9.1 Socket Channels
+
+* Phân theo store:
+
+```
+store_{storeId}
+```
+
+---
+
+## 9.2 Events
+
+| Event         | Direction        |
+| ------------- | ---------------- |
+| new-order     | server → kitchen |
+| update-order  | kitchen → server |
+| order-updated | server → client  |
+
+---
+
+## 9.3 Rules
+
+* Kitchen chỉ nhận order của store mình
+* Không broadcast global
+
+---
+
+# 10. 🔌 API Modules
+
+## 10.1 Auth
+
+* POST /login
+
+---
+
+## 10.2 Users
+
+* GET /users
+* POST /users
+
+---
+
+## 10.3 Tables
+
+* GET /tables/code/:code
+
+---
+
+## 10.4 Orders
+
+* POST /orders
+* GET /orders
+* PATCH /orders/:id
+
+---
+
+## 10.5 Inventory
+
+* GET /inventory
+* POST /import
+* POST /export
+
+---
+
+## 10.6 Products
+
+* GET /products
+
+---
+
+# 11. 🏪 Data Isolation Strategy
+
+## Mandatory Rules
+
+* Mọi collection phải có `storeId`
+* Query luôn filter theo `storeId`
+* Không có shared data giữa store
+
+---
+
+## Index Strategy
+
+* Index:
+
+  * storeId
+  * createdAt
+
+---
+
+# 12. 🔐 Security & Compliance
+
+* Hash password (bcrypt)
+* JWT authentication
+* Validate input (Joi/Zod)
+* Rate limit API
+* Logging & audit
+
+---
+
+# 13. 📊 Non-Functional Requirements
+
+| Category     | Requirement            |
+| ------------ | ---------------------- |
+| Performance  | < 300ms API response   |
+| Scalability  | Horizontal scaling     |
+| Availability | 99% uptime             |
+| Security     | OWASP basic compliance |
+
+---
+
+# 14. 🧪 QA & Testing Strategy
+
+## 14.1 Test Types
+
+* Unit test (logic)
+* Integration test (API)
+* E2E test (flow order)
+
+---
+
+## 14.2 Critical Test Cases
+
+* Order tạo đúng store
+* Không leak data giữa store
+* Inventory không âm
+* Realtime đúng store
+
+---
+
+# 15. 🚀 Deployment
+
+## MVP
+
+* Backend: Render
+* DB: MongoDB Atlas
+* Mobile: Expo
+
+---
+
+## Production (Future)
+
+* Docker
+* CI/CD pipeline
+* Load balancing
+
+---
+
+# 16. ✅ Definition of Done
+
+* User login & role hoạt động
+* Order flow hoàn chỉnh
+* Realtime hoạt động đúng store
+* Inventory trừ chính xác
+* Không có data leakage
+
+---
+
+# 17. 📈 Future Roadmap
+
+* Multi-tenant SaaS
+* Payment integration
+* Reporting dashboard
+* Inventory prediction
+* Multi-warehouse
+
+---
+
+# 📌 END OF DOCUMENT
