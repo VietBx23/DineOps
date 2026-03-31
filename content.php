@@ -765,6 +765,12 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
             ]);
         ?>
         <style>
+            @media screen and (min-width: 850px) {
+    .large-9 {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+    }
+}
             .custom-article-page * {
                 margin: 0;
                 padding: 0;
@@ -777,10 +783,10 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
                 padding: 0 20px 60px;
             }
             .custom-article-page .container {
-                max-width: 1800px;
+                max-width: 1920px;
                 width: 100%;
                 margin: 0 auto;
-                padding: 0 80px;
+                padding: 0 40px;
             }
             .entry-header,
             .post-sidebar,
@@ -804,49 +810,26 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
             .custom-article-page .breadcrumb b {
                 color: #333;
             }
-            .custom-article-page {
-                font-family: 'Inter', sans-serif;
-                background-color: #ffffff;
-                color: #1a1a1a;
-                padding: 0 20px 60px;
-                min-width: 1180px;
-            }
-            .custom-article-page .container {
-                max-width: 1800px;
-                width: calc(100% - 80px);
-                margin: 0 auto;
-                padding: 0 40px;
-            }
-            .custom-article-page {
-                font-family: 'Inter', sans-serif;
-                background-color: #ffffff;
-                color: #1a1a1a;
-                padding: 0 20px 60px;
-                min-width: 1180px;
-            }
-            .custom-article-page .container {
-                max-width: 1920px;
-                width: calc(100% - 80px);
-                margin: 0 auto;
-                padding: 0 40px;
-            }
             .custom-article-page .layout {
                 display: grid;
-                grid-template-columns: 260px minmax(820px, 1fr) 320px;
+                grid-template-columns: 260px minmax(0, 1fr) 320px;
                 gap: 50px;
                 align-items: start;
+                min-height: 1px;
             }
-            .custom-article-page .sidebar-left {
-                width: 260px;
-                background: transparent;
-                border-radius: 0;
-                padding: 0;
-                box-shadow: none;
+            .custom-article-page .sidebar-left,
+            .custom-article-page .sidebar-right {
                 position: sticky;
                 top: 120px;
                 align-self: start;
+                width: auto;
+                background: transparent;
+                padding: 0;
+                box-shadow: none;
+                border-radius: 0;
             }
-            .custom-article-page .sidebar-left h3 {
+            .custom-article-page .sidebar-left h3,
+            .custom-article-page .sidebar-right h3 {
                 font-size: 14px;
                 font-weight: 700;
                 margin-bottom: 18px;
@@ -854,101 +837,43 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
                 letter-spacing: 0.1em;
                 color: #111;
             }
-            .custom-article-page .sidebar-left ul {
+            .custom-article-page .sidebar-left nav ul {
                 list-style: none;
                 padding: 0;
                 margin: 0;
                 display: grid;
                 gap: 12px;
             }
-            .custom-article-page .sidebar-left a {
-                display: block;
-                text-decoration: none;
+            .custom-article-page .sidebar-left nav a,
+            .custom-article-page .related-text {
                 color: #333;
                 font-size: 14px;
-                font-weight: 500;
-                transition: color 0.2s ease;
+                display: inline-block;
+                transition: color .2s ease;
             }
-            .custom-article-page .sidebar-left a:hover {
+            .custom-article-page .sidebar-left nav a:hover {
                 color: #0073e6;
             }
-            .custom-article-page .sidebar-left li {
-                padding: 0;
-                margin: 0;
-            }
-            .custom-article-page .sidebar-right {
-                position: sticky;
-                top: 120px;
-            }
-            .custom-article-page .sidebar-right h3 {
-                font-size: 14px;
-                font-weight: 700;
-                margin-bottom: 24px;
-                color: #111;
-                letter-spacing: 0.08em;
-                text-transform: uppercase;
-            }
-            .custom-article-page .main-article h1 {
-                font-size: 54px;
-                line-height: 1.05;
-            }
-                        @media screen and (min-width: 850px) {
-    .large-9 {
-        flex-basis: 100% !important;
-        max-width: 100% !important;
-    }
-}
-
-            .custom-article-page .article-desc {
-                font-size: 18px;
-                margin-bottom: 45px;
-            }
-            .custom-article-page .breadcrumb b {
-                color: #555;
-                font-weight: 600;
-                margin-left: 5px;
-            }
-            .custom-article-page .layout {
-                display: grid;
-                grid-template-columns: 260px minmax(820px, 1fr) 320px;
-                gap: 60px;
-            }
-            .custom-article-page .sidebar-left {
-                width: 260px;
-                position: sticky;
-                top: 120px;
-                background: transparent;
-                padding: 0;
-                box-shadow: none;
-                border-radius: 0;
-            }
-            .custom-article-page .sidebar-right {
-                width: 320px;
-                position: sticky;
-                top: 120px;
-            }
             .custom-article-page .main-article {
-                min-width: 820px;
+                min-width: 0;
             }
             .custom-article-page .main-article h1 {
-                font-size: 42px;
-                font-weight: 700;
-                line-height: 1.15;
-                letter-spacing: -0.02em;
-                margin-bottom: 35px;
+                font-size: 48px;
+                line-height: 1.05;
+                margin-bottom: 30px;
                 color: #222;
             }
             .custom-article-page .article-desc {
-                font-size: 16px;
+                font-size: 18px;
                 color: #888;
-                line-height: 1.7;
+                line-height: 1.75;
                 margin-bottom: 40px;
             }
             .custom-article-page .meta-data {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 25px 0;
+                padding: 20px 0;
                 border-top: 1px solid #eee;
                 flex-wrap: wrap;
                 gap: 15px;
@@ -965,7 +890,7 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
             .custom-article-page .category-tag {
                 background: #f0f0f0;
                 padding: 4px 12px;
-                border-radius: 15px;
+                border-radius: 999px;
                 font-size: 10px;
                 font-weight: 700;
                 color: #999;
@@ -1019,21 +944,83 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
             .custom-article-page .article-content h4 {
                 scroll-margin-top: 120px;
             }
-            .custom-article-page .sidebar-left nav ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-                display: grid;
-                gap: 12px;
+            @media (max-width: 1280px) {
+                .custom-article-page .container {
+                    padding: 0 32px;
+                }
+                .custom-article-page .layout {
+                    grid-template-columns: 220px minmax(0, 1fr) 280px;
+                    gap: 40px;
+                }
+                .custom-article-page .sidebar-left {
+                    width: 220px;
+                }
+                .custom-article-page .sidebar-right {
+                    width: 280px;
+                }
             }
-            .custom-article-page .sidebar-left nav a {
-                color: #333;
-                font-size: 14px;
-                display: inline-block;
-                transition: color .2s ease;
+            @media (max-width: 1040px) {
+                .custom-article-page .container {
+                    padding: 0 24px;
+                }
+                .custom-article-page .layout {
+                    grid-template-columns: minmax(0, 1fr) 260px;
+                    gap: 30px;
+                }
+                .custom-article-page .sidebar-left,
+                .custom-article-page .sidebar-right {
+                    position: sticky;
+                    top: 90px;
+                    width: auto;
+                }
+                .custom-article-page .main-article h1 {
+                    font-size: 42px;
+                }
             }
-            .custom-article-page .sidebar-left nav a:hover {
-                color: #0073e6;
+            @media (max-width: 900px) {
+                .custom-article-page .layout {
+                    grid-template-columns: 1fr;
+                }
+                .custom-article-page .sidebar-left,
+                .custom-article-page .sidebar-right {
+                    position: static;
+                    width: 100%;
+                }
+                .custom-article-page .sidebar-left {
+                    margin-bottom: 40px;
+                }
+                .custom-article-page .sidebar-right {
+                    margin-top: 40px;
+                }
+                .custom-article-page .main-article h1 {
+                    font-size: 36px;
+                }
+                .custom-article-page .article-desc {
+                    font-size: 16px;
+                }
+                .custom-article-page .sidebar-left nav a,
+                .custom-article-page .related-text {
+                    font-size: 13px;
+                }
+            }
+            @media (max-width: 640px) {
+                .custom-article-page .container {
+                    padding: 0 16px;
+                }
+                .custom-article-page .main-article h1 {
+                    font-size: 30px;
+                }
+                .custom-article-page .article-desc {
+                    font-size: 15px;
+                }
+                .custom-article-page .sidebar-left h3,
+                .custom-article-page .sidebar-right h3 {
+                    font-size: 13px;
+                }
+                .custom-article-page .sidebar-left nav a,
+                .custom-article-page .related-text {
+                    font-size: 13px;
+                }
             }
         </style>
 
