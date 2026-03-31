@@ -1038,7 +1038,7 @@ $job_expired = ($data['expiry'] && strtotime($data['expiry']) < strtotime(date('
         </style>
 
         <div class="custom-article-page">
-            <div class="container">
+            <div class="">
                 <div class="breadcrumb">
                     Blog / <b><?php echo esc_html(get_the_title()); ?></b>
                 </div>
