@@ -1,19 +1,23 @@
 const dotenv = require('dotenv');
+const http = require('http');
 const app = require('./app');
 const db = require('./config/db');
+const initSockets = require('./socket');
 
 dotenv.config();
 
 const port = process.env.PORT || 4000;
+const server = http.createServer(app);
 
-app.listen(port, () => {
-  console.log(`Backend listening on http://localhost:${port}`);
-  db.connect((err) => {
-    if (err) {
-      console.error('Database connection failed:', err);
-      return;
-    }
-    console.log('Connected to database');
+initSockets(server);
+
+db.connect()
+  .then(() => {
+    server.listen(port, () => {
+      console.log(`Backend listening on http://localhost:${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to start server:', error);
   });
-});
 

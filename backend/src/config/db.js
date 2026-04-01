@@ -1,16 +1,21 @@
-const mysql = require('mysql2');
+const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'dineops',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/dineops';
 
-module.exports = pool;
+const connect = async () => {
+  try {
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+};
+
+module.exports = { connect };

@@ -1,6 +1,6 @@
 # DineOps Mobile
 
-React Native Expo skeleton for the DineOps mobile app.
+React Native Expo skeleton for DineOps F&B management.
 
 ## Setup
 

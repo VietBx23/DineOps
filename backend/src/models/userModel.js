@@ -1,23 +1,18 @@
-const db = require('../config/db');
+const mongoose = require('mongoose');
 
-exports.fetchAll = () => {
-  return new Promise((resolve, reject) => {
-    db.query('SELECT id, name, email FROM users', (err, results) => {
-      if (err) return reject(err);
-      resolve(results);
-    });
-  });
-};
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String },
+  role: {
+    type: String,
+    enum: ['admin', 'manager', 'staff', 'kitchen'],
+    default: 'staff',
+  },
+  organizationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
+  storeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  createdAt: { type: Date, default: Date.now },
+});
 
-exports.create = ({ name, email }) => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      'INSERT INTO users (name, email) VALUES (?, ?)',
-      [name, email],
-      (err, result) => {
-        if (err) return reject(err);
-        resolve(result);
-      }
-    );
-  });
-};
+module.exports = mongoose.model('User', userSchema);

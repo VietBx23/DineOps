@@ -1,6 +1,6 @@
 # DineOps Frontend
 
-React + Vite frontend skeleton for DineOps.
+React + Vite frontend skeleton for DineOps F&B management.
 
 ## Setup
 
