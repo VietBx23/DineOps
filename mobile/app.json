@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "DineOps",
+    "slug": "dineops-mobile",
+    "version": "1.0.0",
+    "sdkVersion": "52.0.0",
+    "platforms": ["ios", "android", "web"],
+    "assetBundlePatterns": ["**/*"],
+    "orientation": "portrait"
+  }
+}
